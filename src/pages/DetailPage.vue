@@ -23,30 +23,46 @@
               <div class="col-12 col-sm-6 column justify-center q-py-xl q-px-md">
                 <div class="row justify-between q-py-lg">
                    <span class="text-capitalize q-pl-md">Budget:</span>
-                   <span class="text-capitalize q-pl-md">{{movieDetail.budget}}</span>
+                   <span class="text-capitalize q-pl-md">{{formatter.format(movieDetail.budget)}}</span>
                 </div>
                 <div class="row justify-between q-py-lg">
-                  <span class="text-capitalize q-pl-md">Revenue</span>
-                  <span class="text-capitalize q-pl-md">{{ movieDetail.revenue }}</span>
+                  <span class="text-capitalize q-pl-md">Revenue:</span>
+                  <span class="text-capitalize q-pl-md">{{formatter.format(movieDetail.revenue) }}</span>
                 </div>
                 <div class="row justify-between q-py-lg">
-                  <span class="text-capitalize q-pl-md">Release date</span>
+                  <span class="text-capitalize q-pl-md">Release date:</span>
                   <span class="text-capitalize q-pl-md">{{ movieDetail.release_date }}</span>
                 </div>
                 <div class="row justify-between q-py-lg">
-                  <span class="text-capitalize q-pl-md">Runtime</span>
-                  <span class="text-capitalize q-pl-md">{{movieDetail.runtime}}</span>
+                  <span class="text-capitalize q-pl-md">Runtime:</span>
+                  <span class="text-capitalize q-pl-md">{{movieDetail.runtime}} mins</span>
                 </div>
                 <div class="row justify-between q-py-lg">
-                  <span class="text-capitalize q-pl-md">Vote_average</span>
-                  <span class="text-capitalize q-pl-md">{{ movieDetail.vote_average }}</span>
+                  <span class="text-capitalize q-pl-md">Vote_average:</span>
+                  <span class="text-capitalize q-pl-md">
+                    <q-rating
+                      v-model="movieDetail.vote_average"
+                      size="1.5em"
+                      :max="10"
+                      color="primary"
+                      readonly
+                    />
+                    <q-tooltip class="bg-indigo" :offset="[10, 10]">
+                      {{ movieDetail.vote_average }}
+                    </q-tooltip>
+                    ({{ movieDetail.vote_count }}) votes</span>
                 </div>
-                <div class="row justify-between">
-                  <span class="text-capitalize q-pl-md">Genres</span>
+                <div class="row justify-between q-py-lg">
+                  <span class="text-capitalize q-pl-md">Genres:</span>
 <!--                  <span class="text-capitalize q-pl-md">{{movieDetail.genres}}</span>-->
                   <span class="inline-block">
                   <span v-for="(firibz,index) in movieDetail?.genres" :key="firibz.id">{{firibz.name}}<span v-if="index !==movieDetail.genres.length-1">, </span></span>
                   </span>
+                </div>
+                <div class="row justify-between q-py-lg">
+                  <span class="text-capitalize q-pl-md">IMDB Link:</span>
+                  <span class="text-capitalize q-pl-md"><a target="_blank" :href="imdbBaseUrl+movieDetail.imdb_id">Link</a></span>
+                  <!--                  <span class="text-capitalize q-pl-md">{{movieDetail.genres}}</span>-->
                 </div>
               </div>
 
@@ -97,6 +113,7 @@ export default defineComponent({
     const movieDetail = ref(null);
     const movieCredits = ref(null);
     const imageBaseUrl = process.env.IMAGE_BASE_URL;
+    const imdbBaseUrl = process.env.IMDB_BASE_URL;
 
     const sortCastByPopularity = computed(() => {
       const khar= movieCredits.value['cast'].concat().sort(function(a, b){return b.popularity - a.popularity});
@@ -104,6 +121,14 @@ export default defineComponent({
       console.log(khar)
       return khar;
     })
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+
+      // These options are needed to round to whole numbers if that's what you want.
+      //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+      //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
+    });
     // function sortCastByPopularity() {
     //
     //    const khar = movieCredits.value['cast'].concat().sort(function(a, b){return b.popularity - a.popularity});
@@ -140,6 +165,8 @@ export default defineComponent({
       movieCredits,
       sortCastByPopularity,
       Router,
+      formatter,
+      imdbBaseUrl,
       // essentialLinks: linksList,
       // leftDrawerOpen,
       // toggleLeftDrawer () {

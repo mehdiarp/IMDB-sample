@@ -68,7 +68,7 @@
                    <div class="text-capitalize q-pl-md">{{ item.title }}</div>
                 </div>
                 <div class="q-pl-md">
-                  <div >{{item.release_date }}</div>
+                  <div> <q-icon name="event"/> {{item.release_date }}</div>
                   <div>
                     <span v-for="(genreId, index) in item.genre_ids" :key="genreId">{{getGenreName(genreId)}}<span v-if="index !==item.genre_ids.length-1">, </span></span>
                   </div>
