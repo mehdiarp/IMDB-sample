@@ -3,9 +3,10 @@
     <div class="row  q-pa-md justify-center">
       <div class="col-12 col-sm-10 col-md-9 col-xl-8">
         <div class="row q-px-md items-center">
-              <span class="q-py-xs">search by release date:</span>
+
               <div class="col-12 col-md-5">
-                <div class="row items-center">
+                <div class="row items-center q-pa-md">
+                  <div class="q-py-xs text-bold col-12">search by release date:</div>
                   <div class="col-5">
                     <q-input filled v-model="from" mask="####-##-##" :rules="[ val => val.test('dddd-dd-dd') || 'Please enter the date with YYYY-MM-YY format']">
                       <template v-slot:append>
@@ -79,17 +80,17 @@
             </q-item>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12 bg-green" style="height: 200px">
-            <div class="q-pa-lg flex flex-center">
+        <div class="row q-pa-md">
+          <div class="col-12 q-px-sm">
+            <div class="q-pa-lg bg-amber flex flex-center">
               <q-pagination
-                v-model="current"
-                :max="5"
+                v-model="currentPage"
+                :max="totalPages"
                 input
+                @update:model-value="getMovies"
                 input-class="text-orange-10"
               />
             </div>
-
           </div>
         </div>
       </div>
@@ -105,16 +106,18 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import {movieService} from "src/services/movie.service";
-import {useRouter} from 'vue-router'
+import {useRouter, useRoute} from 'vue-router'
 export default defineComponent({
   name: 'IndexPage',
   setup () {
     const Router = useRouter();
-    const current = ref(1)
-    const from = ref("")
-    const to = ref("")
+    const Route = useRoute();
+    const currentPage = ref(Route.query['page'] || 1)
+    const totalPages = ref(0)
+    const from = ref(Route.query['primary_release_date.gte'])
+    const to = ref(Route.query['primary_release_date.lte'])
     const average= ref({
-      min: 0, max: 10
+      min: Route.query['vote_average.gte'] || 0, max: Route.query['vote_average.lte'] || 10
     })
     let khar = ref([]);
     const imageBaseUrl = process.env.IMAGE_BASE_URL;
@@ -143,16 +146,27 @@ export default defineComponent({
     function goToDetailPage(id) {
       Router.push({ path: '/detail', query: { movieId: id }  })
     }
+
+    function isNumeric(str) {
+      if (typeof str != "string") return false // we only process strings!
+      return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+        !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    }
     // router.push({ name: 'user', params: { username: 'eduardo' } })
-    function getMovies() {
-      const mahdi = {
+    function getMovies(page) {
+      console.log('khaaaaaaar')
+      console.log(page)
+      const query = {
         ['primary_release_date.gte']: from.value,
         ['primary_release_date.lte']: to.value,
         ['vote_average.gte']: average.value.min,
         ['vote_average.lte']: average.value.max,
+        ['page']: isNumeric(page) ? page : currentPage.value,
       }
-      movieService.getAllMovies(mahdi).then((result)=>{
+      Router.replace({query})
+      movieService.getAllMovies(query).then((result)=>{
         khar.value = result.data.results;
+        totalPages.value = result.data.total_pages;
         console.log(khar.value)
       }).catch((error)=>{
         console.log('ridi')
@@ -160,7 +174,8 @@ export default defineComponent({
       })
     }
     return {
-      current,
+      currentPage,
+      totalPages,
       from,
       to,
       average,

@@ -4,7 +4,7 @@
       <div class="col-12 col-sm-10 col-md-8 col-xl-7">
         <div class="row q-pa-md items-center">
           <div class="col-12 col-md-2">
-            <q-btn icon="arrow_back" rounded color="primary" label=" back" to="/"/>
+            <q-btn icon="arrow_back" rounded color="primary" label=" back" @click="Router.back()"/>
           </div>
           <div class="col-10">
             <span class="q-py-xs text-bold">film name</span>
@@ -82,13 +82,14 @@
 
 <script>
 import { defineComponent, ref, computed } from 'vue'
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import {movieService} from "src/services/movie.service";
 
 export default defineComponent({
   name: 'DetailPage',
   setup () {
     const Route = useRoute();
+    const Router = useRouter();
     const current = ref(1)
     const text = ref("")
     const text2 = ref("")
@@ -138,6 +139,7 @@ export default defineComponent({
       imageBaseUrl,
       movieCredits,
       sortCastByPopularity,
+      Router,
       // essentialLinks: linksList,
       // leftDrawerOpen,
       // toggleLeftDrawer () {
