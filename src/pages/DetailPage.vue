@@ -1,5 +1,8 @@
 <template>
   <q-page>
+    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
+      <q-btn fab icon="keyboard_arrow_up" color="accent" />
+    </q-page-scroller>
     <div class="row q-pa-md justify-center">
       <div class="col-12 col-sm-10 col-md-8 col-xl-7">
         <div class="row q-pa-md items-center">
