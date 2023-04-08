@@ -6,43 +6,38 @@
     <div class="row  q-pa-md justify-center">
       <div class="col-12 col-sm-10 col-md-9 col-xl-8">
         <div class="row q-px-md items-center">
-
           <div class="col-12 col-md-5">
             <div class="row items-center q-pa-md">
               <div class="q-py-xs text-bold col-12">search by release date:</div>
-              <div class="col-5">
-                <q-input v-model="from" :rules="[ val => val.test('dddd-dd-dd') || 'Please enter the date with YYYY-MM-YY format']" filled
-                         mask="####-##-##">
-                  <template v-slot:append>
-                    <q-icon class="cursor-pointer" name="event">
-                      <q-popup-proxy cover transition-hide="scale" transition-show="scale">
-                        <q-date v-model="from" mask="YYYY-MM-DD">
-                          <div class="row items-center justify-end">
-                            <q-btn v-close-popup color="primary" flat label="Close"/>
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+              <div class="row full-width">
+                <div class="col-5">
+                  <q-input v-model="from"
+                           :rules="[ val => val.test('dddd-dd-dd') || 'Please enter the date with YYYY-MM-YY format']"
+                           filled
+                           mask="####-##-##">
+                  </q-input>
 
-              </div>
-              <div class="col-5">
-                <q-input v-model="to" :rules="[ val => val.test('dddd-dd-dd') || 'Please enter the date with YYYY-MM-YY format']" filled
-                         mask="####-##-##">
-                  <template v-slot:append>
-                    <q-icon class="cursor-pointer" name="event">
-                      <q-popup-proxy cover transition-hide="scale" transition-show="scale">
-                        <q-date v-model="to" mask="YYYY-MM-DD">
-                          <div class="row items-center justify-end">
-                            <q-btn v-close-popup color="primary" flat label="Close"/>
-                          </div>
-                        </q-date>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+                </div>
+                <div class="col-5">
+                  <q-input v-model="to"
+                           :rules="[ val => val.test('dddd-dd-dd') || 'Please enter the date with YYYY-MM-YY format']"
+                           filled
+                           mask="####-##-##">
+                  </q-input>
+                </div>
 
+                <div class="col-2 column justify-center items-center q-pb-md">
+                  <q-btn color="primary" icon="event" round>
+                    <q-popup-proxy cover transition-hide="scale" transition-show="scale" @before-show="pickerShow">
+                      <q-date v-model="range" mask="YYYY-MM-DD" range @range-start="startSelected"
+                              @range-end="endSelected">
+                        <div class="row items-center justify-end">
+                          <q-btn v-close-popup color="primary" flat label="Close"/>
+                        </div>
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-btn>
+                </div>
               </div>
               <div class="col-12 column items-center">vote average:
                 <q-range
@@ -125,14 +120,15 @@ export default defineComponent({
     const Route = useRoute();
     const currentPage = ref(Route.query['page'] || 1)
     const totalPages = ref(0)
-    const from = ref(Route.query['primary_release_date.gte'])
-    const to = ref(Route.query['primary_release_date.lte'])
+    const from = ref(Route.query['primary_release_date.gte'] || '')
+    const to = ref(Route.query['primary_release_date.lte'] || '')
     const average = ref({
       min: Route.query['vote_average.gte'] || 0, max: Route.query['vote_average.lte'] || 10
     })
     let khar = ref([]);
     const imageBaseUrl = process.env.IMAGE_BASE_URL;
     const allGenres = ref([]);
+    const range = ref({from: '', to: ''})
 
     //methods
     movieService.getAllGenres().then((result) => {
@@ -188,6 +184,32 @@ export default defineComponent({
       })
     }
 
+    function startSelected(val) {
+      console.log('startSelected');
+      const month = val.month < 10 ? '0' + val.month : val.month
+      const day = val.day < 10 ? '0' + val.day : val.day
+      from.value = val.year + '-' + month + '-' + day
+      console.log(val);
+    }
+
+    function endSelected(val) {
+      console.log('endSelected');
+      const month = val.to.month < 10 ? '0' + val.to.month : val.to.month
+      const day = val.to.day < 10 ? '0' + val.to.day : val.to.day
+      to.value = val.to.year + '-' + month + '-' + day
+      console.log(val);
+    }
+
+    function pickerShow() {
+      range.value.from = from.value
+      range.value.to = to.value
+      console.log('endSelected');
+    }
+
+    console.log('from.value')
+    console.log(from.value)
+    console.log('to.value')
+    console.log(to.value)
     return {
       currentPage,
       totalPages,
@@ -197,9 +219,13 @@ export default defineComponent({
       khar,
       imageBaseUrl,
       allGenres,
+      range,
       getGenreName,
       goToDetailPage,
       getMovies,
+      startSelected,
+      endSelected,
+      pickerShow,
       // essentialLinks: linksList,
       // leftDrawerOpen,
       // toggleLeftDrawer () {

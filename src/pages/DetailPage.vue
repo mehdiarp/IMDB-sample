@@ -1,112 +1,119 @@
 <template>
   <q-page>
-    <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
-      <q-btn fab icon="keyboard_arrow_up" color="accent" />
+    <q-page-scroller :offset="[18, 18]" :scroll-offset="150" position="bottom-right">
+      <q-btn color="accent" fab icon="keyboard_arrow_up"/>
     </q-page-scroller>
     <div class="row q-pa-md justify-center">
       <div class="col-12 col-sm-10 col-md-8 col-xl-7">
         <div class="row q-pa-md items-center">
           <div class="col-12 col-md-2">
-            <q-btn icon="arrow_back" rounded color="primary" label=" back" @click="Router.back()"/>
+            <q-btn color="primary" icon="arrow_back" label=" back" rounded @click="Router.back()"/>
           </div>
           <div class="col-10">
             <span class="q-py-xs text-bold">film name</span>
           </div>
         </div>
         <div class="row justify-center q-pa-md">
-          <div class="col-12" >
-            <div class="row bg-amber custom-rounded-borders overflow-hidden" v-if="movieDetail">
+          <div class="col-12">
+            <div v-if="movieDetail" class="row bg-amber custom-rounded-borders overflow-hidden">
               <div class="col-12 col-sm-6">
                 <q-img
-                  class="fit custom-rounded-right-borders"
                   :src="imageBaseUrl+movieDetail.backdrop_path"
+                  class="fit custom-rounded-right-borders"
                   style="max-height: 70vh"
                 />
               </div>
               <div class="col-12 col-sm-6 column justify-center q-py-xl q-px-md">
                 <div class="row justify-between q-py-lg">
-                   <span class="text-capitalize q-pl-md">Budget:</span>
-                   <span class="text-capitalize q-pl-md">{{formatter.format(movieDetail.budget)}}</span>
+                  <span class="text-capitalize q-pl-md">Budget:</span>
+                  <span class="text-capitalize q-pl-md">{{ formatter.format(movieDetail.budget) }}</span>
                 </div>
                 <div class="row justify-between q-py-lg">
                   <span class="text-capitalize q-pl-md">Revenue:</span>
-                  <span class="text-capitalize q-pl-md">{{formatter.format(movieDetail.revenue) }}</span>
+                  <span class="text-capitalize q-pl-md">{{ formatter.format(movieDetail.revenue) }}</span>
                 </div>
                 <div class="row justify-between q-py-lg">
                   <span class="text-capitalize q-pl-md">Release date:</span>
                   <span class="text-capitalize q-pl-md">{{ movieDetail.release_date }}</span>
                 </div>
                 <div class="row justify-between q-py-lg">
+                  <span class="text-capitalize q-pl-md">original_language:</span>
+                  <span class="text-capitalize q-pl-md">{{ movieDetail.original_language }}</span>
+                </div>
+                <div class="row justify-between q-py-lg">
                   <span class="text-capitalize q-pl-md">Runtime:</span>
-                  <span class="text-capitalize q-pl-md">{{movieDetail.runtime}} mins</span>
+                  <span class="text-capitalize q-pl-md">{{ movieDetail.runtime }} mins</span>
                 </div>
                 <div class="row justify-between q-py-lg">
                   <span class="text-capitalize q-pl-md">Vote_average:</span>
                   <span class="text-capitalize q-pl-md">
                     <q-rating
                       v-model="movieDetail.vote_average"
-                      size="1.5em"
                       :max="10"
                       color="primary"
                       readonly
+                      size="1.5em"
                     />
-                    <q-tooltip class="bg-indigo" :offset="[10, 10]">
+                    <q-tooltip :offset="[10, 10]" class="bg-indigo">
                       {{ movieDetail.vote_average }}
                     </q-tooltip>
                     ({{ movieDetail.vote_count }}) votes</span>
                 </div>
                 <div class="row justify-between q-py-lg">
                   <span class="text-capitalize q-pl-md">Genres:</span>
-<!--                  <span class="text-capitalize q-pl-md">{{movieDetail.genres}}</span>-->
+                  <!--                  <span class="text-capitalize q-pl-md">{{movieDetail.genres}}</span>-->
                   <span class="inline-block">
-                  <span v-for="(firibz,index) in movieDetail?.genres" :key="firibz.id">{{firibz.name}}<span v-if="index !==movieDetail.genres.length-1">, </span></span>
+                  <span v-for="(firibz,index) in movieDetail?.genres" :key="firibz.id">{{ firibz.name }}<span
+                    v-if="index !==movieDetail.genres.length-1">, </span></span>
                   </span>
                 </div>
                 <div class="row justify-between q-py-lg">
                   <span class="text-capitalize q-pl-md">IMDB Link:</span>
-                  <span class="text-capitalize q-pl-md"><a target="_blank" :href="imdbBaseUrl+movieDetail.imdb_id">Link</a></span>
+                  <span class="text-capitalize q-pl-md"><a :href="imdbBaseUrl+movieDetail.imdb_id"
+                                                           target="_blank">Link</a></span>
                   <!--                  <span class="text-capitalize q-pl-md">{{movieDetail.genres}}</span>-->
                 </div>
               </div>
 
             </div>
           </div>
-<!--          <div class="col-6 "><div class="text-strike q-pl-md">$=60R/////////////////////sold</div>-->
-<!--            <div class="text-capitalize q-pl-md">sample-imdb////////////////////////////nice</div>-->
-<!--            <div class="text-bold q-pl-md">no information///////////////////////////////////hi</div>-->
-<!--            <div class="text-capitalize q-pl-md">date:2023/26/02/////////////////////////////data</div>-->
-<!--          </div>-->
+          <!--          <div class="col-6 "><div class="text-strike q-pl-md">$=60R/////////////////////sold</div>-->
+          <!--            <div class="text-capitalize q-pl-md">sample-imdb////////////////////////////nice</div>-->
+          <!--            <div class="text-bold q-pl-md">no information///////////////////////////////////hi</div>-->
+          <!--            <div class="text-capitalize q-pl-md">date:2023/26/02/////////////////////////////data</div>-->
+          <!--          </div>-->
         </div>
         <div class="row justify-center">
-          <div class="col-12 q-pa-md" >
-         {{movieDetail?.overview}}
+          <div class="col-12 q-pa-md">
+            {{ movieDetail?.overview }}
           </div>
         </div>
-        <div class="row justify-center" v-if="movieCredits">
-          <div class="col-12 q-px-md q-pt-xl" >
-            <span v-for="(cast,index) in sortCastByPopularity.slice(0, 10)" :key="cast.id">{{cast.name}}
-              <span v-if="sortCastByPopularity.length <10 ? index !== sortCastByPopularity.length-1 : index !==10-1">, </span></span>
-            <span v-if="sortCastByPopularity.length >10"> & {{sortCastByPopularity.length-10}} more. </span>.
+        <div v-if="movieCredits" class="row justify-center">
+          <div class="col-12 q-px-md q-pt-xl">
+            <span v-for="(cast,index) in sortCastByPopularity.slice(0, 10)" :key="cast.id">{{ cast.name }}
+              <span
+                v-if="sortCastByPopularity.length <10 ? index !== sortCastByPopularity.length-1 : index !==10-1">, </span></span>
+            <span v-if="sortCastByPopularity.length >10"> & {{ sortCastByPopularity.length - 10 }} more. </span>.
           </div>
         </div>
       </div>
     </div>
-<!--    <img-->
-<!--      alt="Quasar logo"-->
-<!--      src="~assets/quasar-logo-vertical.svg"-->
-<!--      style="width: 200px; height: 200px"-->
-<!--    >-->
+    <!--    <img-->
+    <!--      alt="Quasar logo"-->
+    <!--      src="~assets/quasar-logo-vertical.svg"-->
+    <!--      style="width: 200px; height: 200px"-->
+    <!--    >-->
   </q-page>
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue'
+import {defineComponent, ref, computed} from 'vue'
 import {useRoute, useRouter} from "vue-router";
 import {movieService} from "src/services/movie.service";
 
 export default defineComponent({
   name: 'DetailPage',
-  setup () {
+  setup() {
     const Route = useRoute();
     const Router = useRouter();
     const current = ref(1)
@@ -119,7 +126,9 @@ export default defineComponent({
     const imdbBaseUrl = process.env.IMDB_BASE_URL;
 
     const sortCastByPopularity = computed(() => {
-      const khar= movieCredits.value['cast'].concat().sort(function(a, b){return b.popularity - a.popularity});
+      const khar = movieCredits.value['cast'].concat().sort(function (a, b) {
+        return b.popularity - a.popularity
+      });
       console.log('khar')
       console.log(khar)
       return khar;
@@ -140,7 +149,7 @@ export default defineComponent({
     //   return khar;
     // }
 
-    movieService.getMovieDetail(movieId).then((result)=>{
+    movieService.getMovieDetail(movieId).then((result) => {
       movieDetail.value = result.data;
       console.log('result')
       console.log(movieDetail.value)
@@ -150,11 +159,13 @@ export default defineComponent({
     })
     console.log('Route')
     console.log(Route.query.movieId)
-    movieService.getCredits(movieId).then((result)=>{
+
+
+    movieService.getCredits(movieId).then((result) => {
       movieCredits.value = result.data;
       console.log('result')
       console.log(movieCredits.value.cast)
-    }).catch((error)=>{
+    }).catch((error) => {
       console.log('ridi')
       console.log(error)
     })
