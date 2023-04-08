@@ -153,7 +153,7 @@ export default defineComponent({
       movieDetail.value = result.data;
       console.log('result')
       console.log(movieDetail.value)
-    }).catch((error)=>{
+    }).catch((error) => {
       console.log('ridi')
       console.log(error)
     })
